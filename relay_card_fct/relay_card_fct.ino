@@ -1,8 +1,9 @@
 #include <Wire.h>
 #include <ArduinoJson.h>
 #include <string.h>
-#include "Bridge.h"
 #include <ctype.h>
+#include "Bridge.h"
+#include "info.h"
 
 void i2c_cicle();
 //--------------------------------------------------------------------------------------
@@ -10,6 +11,7 @@ bool ler_cmd = false;
 char cmd[50];
 String Scmd = " ";
 void Interpretador(char *cmd);
+void default_check();
 //--------------------------------------------------------------------------------------
 void setup() {
   pinMode(CS_Pin, INPUT_PULLUP);
@@ -23,12 +25,12 @@ void setup() {
   Wire.onRequest(sendEvent);
   Serial.begin(9600);
 
-  JsonDocument doc;
-  doc["id"] = 123;
-  doc["sensor"] = "temperature";
-  doc["value"] = 25.7;
-  doc["status"] = "OK";
-  serializeJson(doc, jsonToSend);
+  // JsonDocument doc;
+  // doc["id"] = 123;
+  // doc["sensor"] = "temperature";
+  // doc["value"] = 25.7;
+  // doc["status"] = "OK";
+  // serializeJson(doc, jsonToSend);
   digitalWrite(led, LOW);
   
   mostrarMenu();
@@ -58,15 +60,15 @@ void loop() {
       int novoEndereco = strtol(entrada.c_str(), NULL, 16);
       if (novoEndereco >= 0x08 && novoEndereco <= 0x77) {
         salvarEnderecoI2C((byte)novoEndereco);
-        reset();
+        default_reset();
       } else {
         Serial.println("Endereço inválido! Use de 08 a 77 (hex).");
       }
       mostrarMenu();
     }
     if (opcao == '3') {
-      Serial.println("reset()");
-      reset();
+      Serial.println("default_reset()");
+      default_reset();
     }
     else {
       Serial.println("Opção inválida.");
@@ -87,11 +89,12 @@ void Interpretador(char *cmd) {
   // Comandos simples
   if (strstr(cmd, "reset")) {
     Serial.println("Reseta Card");
-    reset();
+    default_reset();
   }
 
   if (strstr(cmd, "check")) {
     Serial.println("Check Info");
+    default_check();
   }
 
   if (strstr(cmd, "addrss")) {
@@ -104,7 +107,7 @@ void Interpretador(char *cmd) {
       Serial.print(atoi(pos));
       if (novoEndereco >= 0x08 && novoEndereco <= 0x77) {
         salvarEnderecoI2C((byte)novoEndereco);
-        reset();
+        default_reset();
       } else {
         Serial.println("\nEndereço inválido! Use de 08 a 77 (hex).");
       }
@@ -147,8 +150,17 @@ void mostrarMenu() {
   Serial.println("1 - Ver endereço I2C atual");
   Serial.println("2 - Definir novo endereço I2C");
   Serial.println("3 - Resetar");
+  Serial.println("4 - Check");
   Serial.println("==========================");
   Serial.print("Escolha: ");
 }
 
+void default_check(){
+    float temperatura = lerTemperaturaRP2040();
+    Serial.printf(" | Nome: %s | Firmware --v: %s | Número de Portas: %s | Temperatura: %.2f |\n",
+                    nomePCB, firmware_v, numero_de_portas, temperatura);
+    char retorno[30];                    
+    sprintf(retorno,"%s;%s;%s;%.2f",  nomePCB, firmware_v, numero_de_portas, temperatura);
+    jsonToSend = String(retorno);
+}
 

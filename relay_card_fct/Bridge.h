@@ -11,7 +11,7 @@ void initEEPROM();
 void salvarEnderecoI2C(byte endereco);
 byte lerEnderecoI2C();
 void mostrarMenu();
-void reset();
+void default_reset();
 
 #define EEPROM_TAM 512
 #define EEPROM_ADDR_I2C 0
@@ -102,7 +102,7 @@ void sendEvent() {
     for (int i = 0; i < CHUNK_SIZE && sendIndex < jsonToSend.length(); i++, sendIndex++) {
       Wire.write(jsonToSend[sendIndex]);
     }
-
+    jsonToSend = " ";
     if (header == 0x00) {
       sendIndex = 0;
       readyToSend = false;
@@ -135,7 +135,7 @@ byte lerEnderecoI2C() {
   return endereco;
 }
 
-void reset() {
+void default_reset() {
   watchdog_enable(1, 1);  // ativa watchdog com timeout mínimo
   while (1);              // trava o código até o reset ocorrer
 }

@@ -3,11 +3,12 @@ import json
 from smbus2 import SMBus, i2c_msg
 import RPi.GPIO as GPIO
 GPIO.setwarnings(False)
+import json_edit
 
 
 I2C_BUS = 1
 #SLAVE_1_ADDR = 0x17
-CS_ADDRSS = [0x50,0x51,0x52,0x53,0x54,0x55,0x56,0x57,0x58]
+CS_ADDRSS = [0x50,0x51,0x52,0x53,0x54,0x55,0x56,0x57,0x58,0x59]
 CHUNK_SIZE = 28
 
 #wiringpi.wiringPiSetupGpio()
@@ -30,7 +31,7 @@ def scan_i2c():
     found_devices = []
     for CS in enumerate(CHIP_SELECTS):    
         GPIO.output(CS[1],GPIO.LOW)
-        
+        slot = CS[0]+1
         for address in range(0x03, 0x78):  
             try:
                 bus.write_byte(address, 0)  
@@ -39,15 +40,41 @@ def scan_i2c():
                 pass  
         
         if found_devices:
-            print(f"CS{CS[0]+1}: ",found_devices)
-            if int(found_devices[0],16) != CS_ADDRSS[CS[0]+1]:
-            #Redefine o addrss_i2c
-                write = f"addrss;{CS_ADDRSS[CS[0]+1]}"
-                print(f"Enviando {write} ao SLOT {CS[0]}...")
-                actual_addrss = int(found_devices[0],16) 
+            print(f"CS{slot}: ",found_devices)
+            if int(found_devices[0],16) != CS_ADDRSS[slot]:
+
+                actual_addrss = int(found_devices[0],16)
+                ## Serve pra atualizar "slots.json"
+                send_json(bus, actual_addrss, "check") ## CHECK
+                response = read_json(bus, actual_addrss) ## Respostas de CHECK
+                response = response.split(";")
+                json_edit.atualizar_slot_json(json_edit.arquivo_json, slot,                           
+                    novos_dados=
+                    {
+                        "present": True,
+                        "addrss":f"0x{CS_ADDRSS[slot]:02X}",
+                        "name":f"{response[0]}", 
+                        "firmware":f"{response[1]}",
+                        "ports":f"{response[2]}", 
+                        "temperature": f"{response[3]}"
+                    })
+                
+                #Redefine o addrss_i2c
+                write = f"addrss;{CS_ADDRSS[slot]}"
+                print(f"Enviando {write} ao SLOT {slot}...")
                 send_json(bus, actual_addrss, write)
         else:
-            print(f"CS{CS[0]+1}: None")
+            print(f"CS{slot}: None")
+            json_edit.atualizar_slot_json(json_edit.arquivo_json,slot,
+                novos_dados=
+                {
+                    "present": False,
+                    "addrss":None,
+                    "name":None, 
+                    "firmware":None,
+                    "ports":None, 
+                    "temperature": None
+                })  
         found_devices.clear()
         GPIO.output(CS[1],GPIO.HIGH)
         
@@ -126,9 +153,9 @@ if __name__ == '__main__':
                     valores = list(data.values())[3:]
                     print(f"Enviando ao SLOT {slot}...")
                     send_json(bus, CS_ADDRSS[slot], valores)
-                    print("Lendo resposta SLOT {slot}...")
+                    print(f"Lendo resposta SLOT {slot}...")
                     response1 = read_json(bus,  CS_ADDRSS[slot])
-                    print("Resposta SLOT {slot}:", response1)
+                    print(f"Resposta SLOT {slot}:", response1)
                     GPIO.output(CHIP_SELECTS[slot-1],GPIO.HIGH)
                     #time.sleep(1)
                 except Exception as e:
@@ -138,15 +165,15 @@ if __name__ == '__main__':
                 scan_i2c()
             if(op == 3):
                 slot = 1 #int(input("|Slot: "))
-                write= "addrss;51" #str(input("|CMD: "))
+                write= "check" #str(input("|CMD: "))
                 try:
                     #time.sleep(1)
                     GPIO.output(CHIP_SELECTS[slot-1] , GPIO.LOW)
                     print(f"Enviando ao SLOT {slot}...")
                     send_json(bus,  CS_ADDRSS[slot], write)
-                    print("Lendo resposta SLOT {slot}...")
+                    print(f"Lendo resposta SLOT {slot}...")
                     response1 = read_json(bus,  CS_ADDRSS[slot])
-                    print("Resposta SLOT {slot}:", response1)
+                    print(f"Resposta SLOT {slot}:", response1)
                     GPIO.output(CHIP_SELECTS[slot-1] , GPIO.HIGH)
                     #time.sleep(1)
                 except Exception as e:

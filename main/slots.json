@@ -1,0 +1,74 @@
+[
+    {
+        "slot": 1,
+        "present": true,
+        "addrss": "0x56",
+        "name": "Relay Cards 0.1",
+        "firmware": 0.1,
+        "ports": 8,
+        "temperature": 38.7
+    },
+    {
+        "slot": 2,
+        "present": false,
+        "addrss": null,
+        "name": null,
+        "firmware": null,
+        "ports": null,
+        "temperature": null
+    },
+    {
+        "slot": 3,
+        "present": false,
+        "addrss": null,
+        "name": null,
+        "firmware": null,
+        "ports": null,
+        "temperature": null
+    },
+    {
+        "slot": 4,
+        "present": false,
+        "addrss": null,
+        "name": null,
+        "firmware": null,
+        "ports": null,
+        "temperature": null
+    },
+    {
+        "slot": 5,
+        "present": false,
+        "addrss": null,
+        "name": null,
+        "firmware": null,
+        "ports": null,
+        "temperature": null
+    },
+    {
+        "slot": 6,
+        "present": false,
+        "addrss": null,
+        "name": null,
+        "firmware": null,
+        "ports": null,
+        "temperature": null
+    },
+    {
+        "slot": 7,
+        "present": false,
+        "addrss": null,
+        "name": null,
+        "firmware": null,
+        "ports": null,
+        "temperature": null
+    },
+    {
+        "slot": 8,
+        "present": false,
+        "addrss": null,
+        "name": null,
+        "firmware": null,
+        "ports": null,
+        "temperature": null
+    }
+]
