@@ -155,12 +155,5 @@ void mostrarMenu() {
   Serial.print("Escolha: ");
 }
 
-void default_check(){
-    float temperatura = lerTemperaturaRP2040();
-    Serial.printf(" | Nome: %s | Firmware --v: %s | Número de Portas: %s | Temperatura: %.2f |\n",
-                    nomePCB, firmware_v, numero_de_portas, temperatura);
-    char retorno[30];                    
-    sprintf(retorno,"%s;%s;%s;%.2f",  nomePCB, firmware_v, numero_de_portas, temperatura);
-    jsonToSend = String(retorno);
-}
+
 

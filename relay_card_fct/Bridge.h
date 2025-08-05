@@ -139,3 +139,12 @@ void default_reset() {
   watchdog_enable(1, 1);  // ativa watchdog com timeout mínimo
   while (1);              // trava o código até o reset ocorrer
 }
+
+void default_check(){
+    float temperatura = lerTemperaturaRP2040();
+    Serial.printf(" | Nome: %s | Firmware --v: %s | Número de Portas: %s | Temperatura: %.2f |\n",
+                    nomePCB, firmware_v, numero_de_portas, temperatura);
+    char retorno[30];                    
+    sprintf(retorno,"%s;%s;%s;%.2f",  nomePCB, firmware_v, numero_de_portas, temperatura);
+    jsonToSend = String(retorno);
+}

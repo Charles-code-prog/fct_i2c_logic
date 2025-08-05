@@ -148,9 +148,11 @@ def send_json(bus, slot, data_dict):
         time.sleep(0.01)
 
 #----------------------------------------------------------------------------------------------
-def read_json(bus, addr):
+def read_json(bus, slot):
     json_bytes = bytearray()
-
+    
+    CS_ADDRSS = json_edit.ler_lista_enderecos()
+    addr = CS_ADDRSS[slot]
     while True:
         read = i2c_msg.read(addr, CHUNK_SIZE + 1)
         bus.i2c_rdwr(read)
@@ -178,4 +180,3 @@ def read_json(bus, addr):
     except Exception as e:
         print("Erro ao decodificar JSON:", e)
         return None
-
