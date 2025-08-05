@@ -1,7 +1,10 @@
 import json
+import os
 
 # Caminho do arquivo
 arquivo_json = "slots.json"
+arquivo_json_i2c_addrss = "default_addrss.json"
+arquivo_json_rotina = "rotina.json"
 
 def read_json(caminho, slot_especifico=None):
     with open(caminho, "r") as f:
@@ -72,7 +75,101 @@ def atualizar_endereco_slot(caminho_arquivo, slot, novo_endereco):
 
     except Exception as e:
         print(f"Erro ao atualizar: {e}")
+        
 
+def ler_lista_enderecos(caminho_arquivo="default_addrss.json"):
+    try:
+        with open(caminho_arquivo, "r") as f:
+            dados = json.load(f)
+
+        return dados.get("i2c_addresses", [])
+    
+    except Exception as e:
+        print(f"Erro ao ler o arquivo: {e}")
+        return []
+    
+
+
+def gerenciar_rotina(caminho_arquivo, rotina, deletar=False):
+    rotinas = []
+
+    # 1. Lê o conteúdo existente
+    if os.path.exists(caminho_arquivo):
+        with open(caminho_arquivo, "r") as f:
+            try:
+                rotinas = json.load(f)
+            except json.JSONDecodeError:
+                print("Aviso: JSON malformado, criando novo.")
+
+    id_alvo = rotina.get("id")
+    if id_alvo is None:
+        print("Erro: rotina precisa conter um campo 'id'.")
+        return
+
+    # 2. Verifica se o ID existe
+    for i, r in enumerate(rotinas):
+        if r.get("id") == id_alvo:
+            if deletar:
+                rotinas.pop(i)
+                print(f"Rotina com id={id_alvo} deletada.")
+            else:
+                rotinas[i] = rotina
+                print(f"Rotina com id={id_alvo} atualizada.")
+            break
+    else:
+        if deletar:
+            print(f"ID {id_alvo} não encontrado. Nada foi deletado.")
+        else:
+            rotinas.append(rotina)
+            print(f"Nova rotina com id={id_alvo} adicionada.")
+
+    # 3. Salva o arquivo atualizado
+    with open(caminho_arquivo, "w") as f:
+        json.dump(rotinas, f, indent=4)
+
+def obter_rotina_por_id(caminho_arquivo, id_desejado):
+    try:
+        with open(caminho_arquivo, "r") as f:
+            rotinas = json.load(f)
+
+        for rotina in rotinas:
+            if rotina.get("id") == id_desejado:
+                return rotina
+
+        return None  # Se não encontrar o ID
+
+    except Exception as e:
+        print(f"Erro ao ler o arquivo: {e}")
+        return None
+
+resultado = obter_rotina_por_id(arquivo_json_rotina, 3)
+print(resultado)
+
+# gerenciar_rotina(arquivo_json_rotina, 
+#     {
+#         "id": 3,
+#         "test": "Verificar LED",
+#         "slot": 1,
+#         "port": [3, 0],
+#         "debug": False
+#     })
+
+# gerenciar_rotina(arquivo_json_rotina, 
+#     {
+#         "id": 2,
+#         "test": "Tensão 3.3V modificada",
+#         "slot": 2,
+#         "port": [2, 200],
+#         "debug": False
+#     })
+
+#gerenciar_rotina(arquivo_json_rotina, {"id": 2}, deletar=True)
+
+
+# addrss = ler_lista_enderecos()
+# print(addrss)
+
+#atualizar_endereco_slot(arquivo_json_i2c_addrss, slot=2, novo_endereco=0x61)
 
 # atualizar_slot_json(arquivo_json, 1, 
 #     novos_dados=
