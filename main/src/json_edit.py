@@ -1,11 +1,18 @@
 import json
 import os
 
+# Função auxiliar para construir caminhos seguros para arquivos JSON
+def caminho_json(rel_path):
+    return os.path.join(base_dir, "..", rel_path)
+
 # Caminho do arquivo
-arquivo_json_slots      = "data/slots.json"
-arquivo_json_i2c_addrss = "data/default_addrss.json"
-arquivo_json_rotina     = "data/rotina.json"
-arquivo_json_results    = "data/results.json"
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Caminhos absolutos dos arquivos JSON
+arquivo_json_slots       = caminho_json("data/slots.json")
+arquivo_json_i2c_addrss  = caminho_json("data/default_addrss.json")
+arquivo_json_rotina      = caminho_json("data/routine.json")
+arquivo_json_results     = caminho_json("data/results.json")
 
 def read_json_slots(caminho, slot_especifico=None):
     with open(caminho, "r") as f:
@@ -148,6 +155,7 @@ def contar_keys(caminho_json, separador):
 
     return sum(1 for item in dados if separador in item)
 
+print(contar_keys(arquivo_json_rotina,"id"))
     
         
 # gerenciar_rotina(arquivo_json_rotina, 

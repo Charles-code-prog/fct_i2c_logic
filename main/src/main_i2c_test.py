@@ -1,4 +1,5 @@
 import master_mind
+import json_edit
 #----------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     with master_mind.SMBus(master_mind.I2C_BUS) as bus:
@@ -55,8 +56,8 @@ if __name__ == '__main__':
 
             if(op == 5):
                 print("| Rotinas")
-                for i in range(1,contar_keys(master_mind.arquivo_json_rotina,"id")+1):
-                    resultado = obter_rotina_por_id(master_mind.arquivo_json_rotina,i)
+                for i in range(1,json_edit.contar_keys(json_edit.arquivo_json_rotina,"id")+1):
+                    resultado = json_edit.obter_rotina_por_id(json_edit.arquivo_json_rotina,i)
                     if resultado:
                         print(resultado)
                     else:
