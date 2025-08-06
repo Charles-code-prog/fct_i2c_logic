@@ -1,4 +1,3 @@
-#MAIN Tester
 import time
 import json
 from smbus2 import SMBus, i2c_msg
@@ -139,6 +138,7 @@ def send_json(bus, slot, data_dict):
     json_bytes = json_str.encode('utf-8')
     index = 0
     print(json_str)
+    GPIO.output(CHIP_SELECTS[slot],GPIO.LOW)
     while index < len(json_bytes):
         chunk = json_bytes[index:index + CHUNK_SIZE]
         header = [0x01 if index + CHUNK_SIZE < len(json_bytes) else 0x00]
@@ -146,6 +146,7 @@ def send_json(bus, slot, data_dict):
         bus.i2c_rdwr(msg)
         index += CHUNK_SIZE
         time.sleep(0.01)
+    GPIO.output(CHIP_SELECTS[slot],GPIO.HIGH)
 
 #----------------------------------------------------------------------------------------------
 def read_json(bus, slot):
@@ -153,6 +154,7 @@ def read_json(bus, slot):
     
     CS_ADDRSS = json_edit.ler_lista_enderecos()
     addr = CS_ADDRSS[slot]
+    GPIO.output(CHIP_SELECTS[slot],GPIO.LOW)
     while True:
         read = i2c_msg.read(addr, CHUNK_SIZE + 1)
         bus.i2c_rdwr(read)
@@ -173,7 +175,7 @@ def read_json(bus, slot):
             break
 
         time.sleep(0.01) 
-
+    GPIO.output(CHIP_SELECTS[slot],GPIO.HIGH)
     try:
         json_str = json_bytes.decode('utf-8')
         return json_str
@@ -181,63 +183,4 @@ def read_json(bus, slot):
         print("Erro ao decodificar JSON:", e)
         return None
 
-
-#----------------------------------------------------------------------------------------------
-if __name__ == '__main__':
-    #time.sleep(3)
-    with SMBus(I2C_BUS) as bus:
-        while True:
-            print("#### MENU I2C ####")
-            print("1. Enviar JSON")
-            print("2. Scanear enderecos/cards")
-            print("3. Enviar comando: ")
-            print("4. Escanear slot")
-            
-            op = (int(input("Digite a opcao: ")))
-            if(op == 1):
-                slot = 2# int(input("|Slot: "))
-                #port = int(input("|Port: "))
-                #write =int(input("|Action: "))
-                try:
-                    #time.sleep(1)
-                    GPIO.output(CHIP_SELECTS[slot],GPIO.LOW)
-                
-                    data = {
-                        "id": "5",                 # ID da requisicao
-                        "test":"Tensao 3.3V",      # Irrelevante ao firmware
-                        "slot":slot,          # Chip Select SPI
-                        "port_output":[1,1],  # Porta a ser usada
-                        "debug": True}
-                    valores = list(data.values())[3:]
-                    print(f"Enviando ao SLOT {slot}...")
-                    send_json(bus, slot, valores)
-                    print(f"Lendo resposta SLOT {slot}...")
-                    response1 = read_json(bus,slot)
-                    print(f"Resposta SLOT {slot}:", response1)
-                    GPIO.output(CHIP_SELECTS[slot],GPIO.HIGH)
-                    #time.sleep(1)
-                except Exception as e:
-                    print(f"Modulo SLOT {slot} nao encontrado.")
-                print()
-            if(op == 2):
-                scan_i2c()
-            if(op == 3):
-                slot = 1 #int(input("|Slot: "))
-                write= "check" #str(input("|CMD: "))
-                try:
-                    #time.sleep(1)
-                    GPIO.output(CHIP_SELECTS[slot] , GPIO.LOW)
-                    print(f"Enviando ao SLOT {slot}...")
-                    send_json(bus, slot, write)
-                    print(f"Lendo resposta SLOT {slot}...")
-                    response1 = read_json(bus,  slot)
-                    print(f"Resposta SLOT {slot}:", response1)
-                    GPIO.output(CHIP_SELECTS[slot] , GPIO.HIGH)
-                    #time.sleep(1)
-                except Exception as e:
-                    print(f"Modulo SLOT {slot} nao encontrado.")
-                print()
-            if(op == 4):
-                slot = int(input("|Slot: "))
-                scan_i2c_slot(slot)
 

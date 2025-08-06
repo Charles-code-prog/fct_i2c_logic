@@ -2,15 +2,16 @@ import json
 import os
 
 # Caminho do arquivo
-arquivo_json = "slots.json"
-arquivo_json_i2c_addrss = "default_addrss.json"
-arquivo_json_rotina = "rotina.json"
+arquivo_json_slots      = "data/slots.json"
+arquivo_json_i2c_addrss = "data/default_addrss.json"
+arquivo_json_rotina     = "data/rotina.json"
+arquivo_json_results    = "data/results.json"
 
-def read_json(caminho, slot_especifico=None):
+def read_json_slots(caminho, slot_especifico=None):
     with open(caminho, "r") as f:
         data = json.load(f)
 
-    # Se não for lista (erro no arquivo), aborta
+    # Se nao for lista (erro no arquivo), aborta
     if not isinstance(data, list):
         print("Erro: o JSON precisa conter uma lista de objetos.")
         return
@@ -20,7 +21,7 @@ def read_json(caminho, slot_especifico=None):
         if slot_especifico is None or placa["slot"] == slot_especifico:
             print(f"Slot: {placa['slot']}")
             print(f"Presente: {placa['present']}")
-            print(f"Endereço I2C: {placa['addrss']}")
+            print(f"Endereoo I2C: {placa['addrss']}")
             print(f"Nome: {placa['name']}")
             print(f"Firmware: {placa['firmware']}")
             print(f"Portas: {placa['ports']}")
@@ -29,34 +30,32 @@ def read_json(caminho, slot_especifico=None):
             encontrado = True
 
     if not encontrado:
-        print(f"Slot {slot_especifico} não encontrado.")
+        print(f"Slot {slot_especifico} nao encontrado.")
 
 
 def atualizar_slot_json(caminho, slot_alvo, novos_dados):
     # 1. Carrega o JSON existente
     with open(caminho, "r") as f:
         dados = json.load(f)
-
     # 2. Atualiza o slot correspondente
     for slot in dados:
         if slot["slot"] == slot_alvo:
             slot.update(novos_dados)
             break
-
-    # 3. Salva novamente o JSON com as alterações
+    # 3. Salva novamente o JSON com as alteracoes
     with open(caminho, "w") as f:
         json.dump(dados, f, indent=4)
 
-
+### ADDRSS
 def atualizar_endereco_slot(caminho_arquivo, slot, novo_endereco):
     try:
-        # 1. Lê o conteúdo do arquivo JSON
+        # 1. Le o conteudo do arquivo JSON
         with open(caminho_arquivo, "r") as f:
             dados = json.load(f)
 
-        # 2. Garante que há uma lista válida
+        # 2. Garante que ha uma lista valida
         if "i2c_addresses" not in dados or not isinstance(dados["i2c_addresses"], list):
-            print("Erro: Estrutura inválida no JSON.")
+            print("Erro: Estrutura invalida no JSON.")
             return
 
         # 3. Verifica se o slot existe
@@ -64,14 +63,14 @@ def atualizar_endereco_slot(caminho_arquivo, slot, novo_endereco):
             print(f"Erro: Slot {slot} fora do intervalo.")
             return
 
-        # 4. Atualiza o slot com o novo endereço
+        # 4. Atualiza o slot com o novo endereao
         dados["i2c_addresses"][slot] = novo_endereco
 
         # 5. Salva o arquivo novamente
         with open(caminho_arquivo, "w") as f:
             json.dump(dados, f, indent=4)
 
-        print(f"Endereço do slot {slot} atualizado para {novo_endereco} com sucesso.")
+        print(f"Endereco do slot {slot} atualizado para {novo_endereco} com sucesso.")
 
     except Exception as e:
         print(f"Erro ao atualizar: {e}")
@@ -93,7 +92,7 @@ def ler_lista_enderecos(caminho_arquivo="default_addrss.json"):
 def gerenciar_rotina(caminho_arquivo, rotina, deletar=False):
     rotinas = []
 
-    # 1. Lê o conteúdo existente
+    # 1. Le o conteudo existente
     if os.path.exists(caminho_arquivo):
         with open(caminho_arquivo, "r") as f:
             try:
@@ -118,7 +117,7 @@ def gerenciar_rotina(caminho_arquivo, rotina, deletar=False):
             break
     else:
         if deletar:
-            print(f"ID {id_alvo} não encontrado. Nada foi deletado.")
+            print(f"ID {id_alvo} nao encontrado. Nada foi deletado.")
         else:
             rotinas.append(rotina)
             print(f"Nova rotina com id={id_alvo} adicionada.")
@@ -136,18 +135,24 @@ def obter_rotina_por_id(caminho_arquivo, id_desejado):
             if rotina.get("id") == id_desejado:
                 return rotina
 
-        return None  # Se não encontrar o ID
+        return None  # Se nao encontrar o ID
 
     except Exception as e:
         print(f"Erro ao ler o arquivo: {e}")
         return None
+    
 
-resultado = obter_rotina_por_id(arquivo_json_rotina, 3)
-print(resultado)
+def contar_keys(caminho_json, separador):
+    with open(caminho_json, 'r', encoding='utf-8') as f:
+        dados = json.load(f)  # <-- aqui usamos json.load() (sem 's')
 
+    return sum(1 for item in dados if separador in item)
+
+    
+        
 # gerenciar_rotina(arquivo_json_rotina, 
 #     {
-#         "id": 3,
+#         "id": 1,
 #         "test": "Verificar LED",
 #         "slot": 1,
 #         "port": [3, 0],

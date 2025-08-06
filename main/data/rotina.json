@@ -1,0 +1,32 @@
+[
+    {
+        "id": 3,
+        "test": "Verificar LED",
+        "slot": 1,
+        "port": [
+            1,
+            0
+        ],
+        "debug": false
+    },
+    {
+        "id": 2,
+        "test": "Verificar LED",
+        "slot": 1,
+        "port": [
+            1,
+            1
+        ],
+        "debug": false
+    },
+    {
+        "id": 1,
+        "test": "Verificar LED",
+        "slot": 1,
+        "port": [
+            1,
+            0
+        ],
+        "debug": false
+    }
+]

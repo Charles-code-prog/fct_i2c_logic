@@ -1,0 +1,11 @@
+[
+    {
+        "id":1,
+        "test":"Tensão 3.3V",
+        "slot":2,
+        "result": "APROVADO",
+        "value": 3.3,
+        "ranges": [2.9,3.4],
+        "debug":true
+    }
+]
