@@ -1,8 +1,9 @@
 #include "pico/stdlib.h"
 #include "hardware/adc.h"
 
-char nomePCB[] = "Card Relay 0.1";
+char nomePCB[] = "Relay";
 char firmware_v[] = "0.1";
+char boardType[] = "OUT"; // IN ou IOUT
 char numero_de_portas[] = "8";
 
 float lerTemperaturaRP2040() {
@@ -19,4 +20,15 @@ float lerTemperaturaRP2040() {
   float temperatura = 27.0f - (voltagem - 0.706f) / 0.001721f;
 
   return temperatura;
+}
+
+float lerAlimentacaoRP2040(){
+  analogReadResolution(12); // ADC de 12 bits
+
+  int leitura = analogRead(29); // GPIO 29 → canal 4 → leitura da referência interna de 0.9V
+
+  // Estimar a tensão de alimentação (Vdd)
+  float vRefInterna = 0.9; // volts
+  float vdd = (vRefInterna * 4096.0) / leitura;
+  return vdd;
 }

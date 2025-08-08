@@ -1,14 +1,14 @@
 import json
 import os
 
-# Função auxiliar para construir caminhos seguros para arquivos JSON
-def caminho_json(rel_path):
-    return os.path.join(base_dir, "..", rel_path)
-
 # Caminho do arquivo
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Caminhos absolutos dos arquivos JSON
+# Funcaoo auxiliar para construir caminhos seguros para arquivos JSON
+def caminho_json(rel_path):
+    return os.path.join(base_dir, "..", rel_path)
+
+# Caminhos absolutos dos arquivos JSON  
 arquivo_json_slots       = caminho_json("data/slots.json")
 arquivo_json_i2c_addrss  = caminho_json("data/default_addrss.json")
 arquivo_json_rotina      = caminho_json("data/routine.json")
@@ -28,7 +28,7 @@ def read_json_slots(caminho, slot_especifico=None):
         if slot_especifico is None or placa["slot"] == slot_especifico:
             print(f"Slot: {placa['slot']}")
             print(f"Presente: {placa['present']}")
-            print(f"Endereoo I2C: {placa['addrss']}")
+            print(f"Endereco I2C: {placa['addrss']}")
             print(f"Nome: {placa['name']}")
             print(f"Firmware: {placa['firmware']}")
             print(f"Portas: {placa['ports']}")
@@ -40,18 +40,27 @@ def read_json_slots(caminho, slot_especifico=None):
         print(f"Slot {slot_especifico} nao encontrado.")
 
 
-def atualizar_slot_json(caminho, slot_alvo, novos_dados):
+def atualizar_slot_json(caminho, slot_alvo, novos_dados=False):
     # 1. Carrega o JSON existente
     with open(caminho, "r") as f:
         dados = json.load(f)
+
     # 2. Atualiza o slot correspondente
     for slot in dados:
         if slot["slot"] == slot_alvo:
-            slot.update(novos_dados)
+            if novos_dados:
+                # Atualiza com os dados fornecidos
+                slot.update(novos_dados)
+            else:
+                # Seta todos os campos (menos "slot") para None
+                for chave in list(slot.keys()):
+                    if chave != "slot":
+                        slot[chave] = None
             break
+
     # 3. Salva novamente o JSON com as alteracoes
     with open(caminho, "w") as f:
-        json.dump(dados, f, indent=4)
+        json.dump(dados, f, indent=4, ensure_ascii=False)
 
 ### ADDRSS
 def atualizar_endereco_slot(caminho_arquivo, slot, novo_endereco):
@@ -83,9 +92,9 @@ def atualizar_endereco_slot(caminho_arquivo, slot, novo_endereco):
         print(f"Erro ao atualizar: {e}")
         
 
-def ler_lista_enderecos(caminho_arquivo="default_addrss.json"):
+def ler_lista_enderecos():
     try:
-        with open(caminho_arquivo, "r") as f:
+        with open(arquivo_json_i2c_addrss, "r") as f:
             dados = json.load(f)
 
         return dados.get("i2c_addresses", [])
@@ -155,8 +164,10 @@ def contar_keys(caminho_json, separador):
 
     return sum(1 for item in dados if separador in item)
 
-print(contar_keys(arquivo_json_rotina,"id"))
-    
+#atualizar_slot_json(arquivo_json_slots,1)
+#print("Lista de enderecos: ",ler_lista_enderecos())
+#print("Numero de teste por id: ",contar_keys(arquivo_json_rotina,"id"))
+#print(contar_keys(arquivo_json_rotina,"id"))
         
 # gerenciar_rotina(arquivo_json_rotina, 
 #     {
@@ -177,11 +188,6 @@ print(contar_keys(arquivo_json_rotina,"id"))
 #     })
 
 #gerenciar_rotina(arquivo_json_rotina, {"id": 2}, deletar=True)
-
-
-# addrss = ler_lista_enderecos()
-# print(addrss)
-
 #atualizar_endereco_slot(arquivo_json_i2c_addrss, slot=2, novo_endereco=0x61)
 
 # atualizar_slot_json(arquivo_json, 1, 
@@ -194,6 +200,7 @@ print(contar_keys(arquivo_json_rotina,"id"))
 #     "ports":8, 
 #     "temperature": 38.7
 #     })
+
 # atualizar_slot_json(arquivo_json,4,
 #     novos_dados=
 #     {
@@ -205,4 +212,4 @@ print(contar_keys(arquivo_json_rotina,"id"))
 #     "temperature": None
 #     })  
 #write_json(arquivo_json,2,True,"Volts Card 2.1",2.3,32,45.3)
-#read_json(arquivo_json,1)
+# read_json_slots(arquivo_json_slots,1)

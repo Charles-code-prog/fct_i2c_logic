@@ -1,5 +1,7 @@
+#include <exception>
 #include "hardware/watchdog.h"
 #include <EEPROM.h>
+#include "info.h"
 
 const int CS_Pin = 17;
 int led = LED_BUILTIN; 
@@ -142,9 +144,11 @@ void default_reset() {
 
 void default_check(){
     float temperatura = lerTemperaturaRP2040();
-    Serial.printf(" | Nome: %s | Firmware --v: %s | Número de Portas: %s | Temperatura: %.2f |\n",
-                    nomePCB, firmware_v, numero_de_portas, temperatura);
+    float voltage     = lerAlimentacaoRP2040();
+    Serial.printf(" | Nome: %s | Firmware --v: %s | TIPO: %s | Número de Portas: %s | Temperatura: %.1f | Tensão: %.1f \n",
+                    nomePCB, firmware_v, boardType,numero_de_portas, temperatura, voltage);
     char retorno[30];                    
-    sprintf(retorno,"%s;%s;%s;%.2f",  nomePCB, firmware_v, numero_de_portas, temperatura);
+    sprintf(retorno,"%s;%s;%s;%s;%.2f;%.2f",  nomePCB, firmware_v, boardType, numero_de_portas, temperatura, voltage);
+    Serial.println(strlen(retorno));
     jsonToSend = String(retorno);
 }

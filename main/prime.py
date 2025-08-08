@@ -33,7 +33,6 @@ def update_i2c_addr():
     CS_ADDRSS = json_edit.ler_lista_enderecos()
 
 def busca_addr_i2c(slot):
-    #ativar_chip_select(slot)
     for address in range(0x03, 0x78):  
         try:
             bus.write_byte(address, 0)  
@@ -42,7 +41,6 @@ def busca_addr_i2c(slot):
             return addr_atual
         except IOError:
             pass  
-
     print(f"CS{slot}: {None}")
     return None
 
@@ -55,17 +53,15 @@ def redefinir_endereco(slot, endereco_antigo):
         print(f"-- Enviando {write} ao SLOT {slot}...")
         send_json(slot,f"addrss;{CS_ADDRSS[slot]}",endereco_antigo)
 
-def send_check(slot, addr = False):
+def send_check(slot,addr = False):
     addr = CS_ADDRSS[slot] if addr is False else int(addr,16)
     send_json(slot,"check",addr)
     response = read_json(slot,addr).split(";")
     return response
     
-def update_slot_json(slot,response=False):
-    if response is False:
-        novos_dados = False
-    else:
-        novos_dados = {
+def update_slot_json(slot,response):
+    json_edit.atualizar_slot_json(json_edit.arquivo_json_slots,slot,
+    {
         "present": True,
         "addrss":CS_ADDRSS[slot],
         "name":response[0], 
@@ -74,9 +70,7 @@ def update_slot_json(slot,response=False):
         "ports":response[3], 
         "temperature": response[4],
         "voltage":response[5]
-        }
-    json_edit.atualizar_slot_json(json_edit.arquivo_json_slots,slot, novos_dados)
-
+    })
 
 def scan_i2c(barramento=False):
     update_i2c_addr()
@@ -95,8 +89,6 @@ def scan_i2c(barramento=False):
             print(response)
             update_slot_json(slot,response)
             redefinir_endereco(slot,addr)
-        else:
-            update_slot_json(slot)
         desativar_chip_select(slot)
         
 #----------------------------------------------------------------------------------------------
@@ -149,9 +141,74 @@ def read_json(slot, addr = False):
     except Exception as e:
         print("Erro ao decodificar JSON:", e)
         return None
-        
+
+#----------------------------------------------------------------------------------------------
+
+    
 # Registro automatico ao sair
 @atexit.register
 def fechar_gpio():
     print("Fechando GPIO...")
     lgpio.gpiochip_close(HANDLE)
+
+#----------------------------------------------------------------------------------------------
+if __name__ == '__main__':
+    while True:
+        print("#### MENU I2C ####")
+        print("1. Enviar JSON")
+        print("2. Scanear enderecos/cards")
+        print("3. Enviar comando: ")
+        print("4. Escanear slot")
+        print("5. Rodar Rotina")
+        print("6. CHECK")
+        
+        op = (int(input("| Digite a opcao: ")))
+        if(op == 1):
+            slot = 1# int(input("|Slot: "))
+            #port = int(input("|Port: "))
+            #write =int(input("|Action: "))
+            try:
+                #time.sleep(1)
+                ativar_chip_select(slot)
+            
+                data = {
+                    "id": "5",                 # ID da requisicao
+                    "test":"Tensao 3.3V",      # Irrelevante ao firmware
+                    "slot":slot,          # Chip Select SPI
+                    "port_output":[1,1],  # Porta a ser usada
+                    "debug": True}
+                write = list(data.values())[3:]
+                print(f"Enviando ao SLOT {slot}...")
+                send_json(bus,  slot, write)
+                print(f"Lendo resposta SLOT {slot}...")
+                response = read_json(slot)
+                print(f"Resposta SLOT {slot}:", response)
+                desativar_chip_select(slot)
+                #time.sleep(1)
+            except Exception as e:
+                print(f"Modulo SLOT {slot} nao encontrado.")
+            print()
+        if(op == 2):
+            scan_i2c()
+        if(op == 3):
+            slot = 2 #int(input("|Slot: "))
+            write = "check" #str(input("|CMD: "))
+            try:
+                print(f"Enviando ao SLOT {slot}...")
+                send_json(slot, write)
+                print(f"Lendo resposta SLOT {slot}...")
+                response = read_json(slot)
+                print(f"Resposta SLOT {slot}:", response)
+            except Exception as e:
+                print(f"Modulo SLOT {slot} nao encontrado.")
+            print()
+        if(op==4):
+            slot = int(input("|Slot: "))
+            scan_i2c(slot)
+        if(op==5):
+            pass
+        if(op == 6):
+            slot = 2
+            send_check(slot,CS_ADDRSS[slot])
+        print()
+

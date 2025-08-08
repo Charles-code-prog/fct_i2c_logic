@@ -3,7 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "Bridge.h"
-#include "info.h"
+
 
 void i2c_cicle();
 //--------------------------------------------------------------------------------------
@@ -69,6 +69,10 @@ void loop() {
     if (opcao == '3') {
       Serial.println("default_reset()");
       default_reset();
+    }
+    if (opcao == '4'){
+      Serial.println("Check Info");
+      default_check();
     }
     else {
       Serial.println("Opção inválida.");

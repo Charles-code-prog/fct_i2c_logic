@@ -5,8 +5,10 @@
         "addrss": "0x56",
         "name": "Relay Cards 0.1",
         "firmware": 0.1,
+        "type": "OUTPUT",
         "ports": 8,
-        "temperature": 38.7
+        "temperature": 38.7,
+        "voltage": 5.33
     },
     {
         "slot": 2,
@@ -14,8 +16,10 @@
         "addrss": null,
         "name": null,
         "firmware": null,
+        "type": null,
         "ports": null,
-        "temperature": null
+        "temperature": null,
+        "voltage":null
     },
     {
         "slot": 3,
@@ -23,8 +27,10 @@
         "addrss": null,
         "name": null,
         "firmware": null,
+        "type": null,
         "ports": null,
-        "temperature": null
+        "temperature": null,
+        "voltage":null
     },
     {
         "slot": 4,
@@ -32,8 +38,10 @@
         "addrss": null,
         "name": null,
         "firmware": null,
+        "type": null,
         "ports": null,
-        "temperature": null
+        "temperature": null,
+        "voltage":null
     },
     {
         "slot": 5,
@@ -41,8 +49,10 @@
         "addrss": null,
         "name": null,
         "firmware": null,
+        "type": null,
         "ports": null,
-        "temperature": null
+        "temperature": null,
+        "voltage":null
     },
     {
         "slot": 6,
@@ -50,8 +60,10 @@
         "addrss": null,
         "name": null,
         "firmware": null,
+        "type": null,
         "ports": null,
-        "temperature": null
+        "temperature": null,
+        "voltage":null
     },
     {
         "slot": 7,
@@ -59,8 +71,10 @@
         "addrss": null,
         "name": null,
         "firmware": null,
+        "type": null,
         "ports": null,
-        "temperature": null
+        "temperature": null,
+        "voltage":null
     },
     {
         "slot": 8,
@@ -68,7 +82,9 @@
         "addrss": null,
         "name": null,
         "firmware": null,
+        "type": null,
         "ports": null,
-        "temperature": null
+        "temperature": null,
+        "voltage":null
     }
 ]

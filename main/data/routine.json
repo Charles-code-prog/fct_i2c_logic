@@ -1,24 +1,5 @@
+
 [
-    {
-        "id": 3,
-        "test": "Verificar LED",
-        "slot": 1,
-        "port": [
-            1,
-            0
-        ],
-        "debug": false
-    },
-    {
-        "id": 2,
-        "test": "Verificar LED",
-        "slot": 1,
-        "port": [
-            1,
-            1
-        ],
-        "debug": false
-    },
     {
         "id": 1,
         "test": "Verificar LED",
@@ -28,5 +9,25 @@
             0
         ],
         "debug": false
+    },    
+    {
+        "id": 2,
+        "test": "Testar 5V",
+        "slot": 2,
+        "port": [
+            5,
+            50
+        ],
+        "debug": false
+    },
+    {
+        "id": 3,
+        "test": "Testar 220V",
+        "slot": 5,
+        "port": [
+            1,
+            100
+        ],
+        "debug": true
     }
 ]
