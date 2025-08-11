@@ -14,7 +14,9 @@ arquivo_json_i2c_addrss  = caminho_json("data/default_addrss.json")
 arquivo_json_rotina      = caminho_json("data/routine.json")
 arquivo_json_results     = caminho_json("data/results.json")
 
-def read_json_slots(caminho, slot_especifico=None):
+### SLOT
+def read_json_slots(slot_especifico=None):
+    caminho = arquivo_json_slots
     with open(caminho, "r") as f:
         data = json.load(f)
 
@@ -24,6 +26,7 @@ def read_json_slots(caminho, slot_especifico=None):
         return
 
     encontrado = False
+    result = []
     for placa in data:
         if slot_especifico is None or placa["slot"] == slot_especifico:
             print(f"Slot: {placa['slot']}")
@@ -31,17 +34,21 @@ def read_json_slots(caminho, slot_especifico=None):
             print(f"Endereco I2C: {placa['addrss']}")
             print(f"Nome: {placa['name']}")
             print(f"Firmware: {placa['firmware']}")
+            print(f"Type: {placa['type']}")
             print(f"Portas: {placa['ports']}")
             print(f"Temperatura: {placa['temperature']} C")
+            print(f"Tensao de alimentaçao: {placa['voltage']} C")  
             print("-" * 30)
             encontrado = True
 
     if not encontrado:
         print(f"Slot {slot_especifico} nao encontrado.")
 
+#read_json_slots(2)
 
-def atualizar_slot_json(caminho, slot_alvo, novos_dados=False):
+def atualizar_slot_json(slot_alvo, novos_dados=False):
     # 1. Carrega o JSON existente
+    caminho = arquivo_json_slots
     with open(caminho, "r") as f:
         dados = json.load(f)
 
@@ -63,7 +70,8 @@ def atualizar_slot_json(caminho, slot_alvo, novos_dados=False):
         json.dump(dados, f, indent=4, ensure_ascii=False)
 
 ### ADDRSS
-def atualizar_endereco_slot(caminho_arquivo, slot, novo_endereco):
+def atualizar_endereco_slot(slot, novo_endereco):
+    caminho_arquivo = arquivo_json_i2c_addrss
     try:
         # 1. Le o conteudo do arquivo JSON
         with open(caminho_arquivo, "r") as f:
@@ -104,10 +112,10 @@ def ler_lista_enderecos():
         return []
     
 
-
-def gerenciar_rotina(caminho_arquivo, rotina, deletar=False):
+### Rotinas
+def gerenciar_rotina(rotina, deletar=False):
     rotinas = []
-
+    caminho_arquivo = arquivo_json_rotina
     # 1. Le o conteudo existente
     if os.path.exists(caminho_arquivo):
         with open(caminho_arquivo, "r") as f:
@@ -137,22 +145,20 @@ def gerenciar_rotina(caminho_arquivo, rotina, deletar=False):
         else:
             rotinas.append(rotina)
             print(f"Nova rotina com id={id_alvo} adicionada.")
-
     # 3. Salva o arquivo atualizado
     with open(caminho_arquivo, "w") as f:
         json.dump(rotinas, f, indent=4)
 
-def obter_rotina_por_id(caminho_arquivo, id_desejado):
+
+### GERAL
+def obter_rotina_por_chave(caminho_arquivo, chave):
     try:
         with open(caminho_arquivo, "r") as f:
             rotinas = json.load(f)
-
         for rotina in rotinas:
-            if rotina.get("id") == id_desejado:
+            if rotina.get(chave):
                 return rotina
-
         return None  # Se nao encontrar o ID
-
     except Exception as e:
         print(f"Erro ao ler o arquivo: {e}")
         return None

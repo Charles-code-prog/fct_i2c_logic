@@ -53,12 +53,12 @@ def redefinir_endereco(slot, endereco_antigo):
         # Redefine o addrss_i2c
         write = f"addrss;{CS_ADDRSS[slot]}"
         print(f"-- Enviando {write} ao SLOT {slot}...")
-        send_json(slot,f"addrss;{CS_ADDRSS[slot]}",endereco_antigo)
+        send_i2c(slot,f"addrss;{CS_ADDRSS[slot]}",endereco_antigo)
 
 def send_check(slot, addr = False):
     addr = CS_ADDRSS[slot] if addr is False else int(addr,16)
-    send_json(slot,"check",addr)
-    response = read_json(slot,addr).split(";")
+    send_i2c(slot,"check",addr)
+    response = read_i2c(slot,addr).split(";")
     return response
     
 def update_slot_json(slot,response=False):
@@ -75,7 +75,7 @@ def update_slot_json(slot,response=False):
         "temperature": response[4],
         "voltage":response[5]
         }
-    json_edit.atualizar_slot_json(json_edit.arquivo_json_slots,slot, novos_dados)
+    json_edit.atualizar_slot_json(slot, novos_dados)
 
 
 def scan_i2c(barramento=False):
@@ -100,7 +100,7 @@ def scan_i2c(barramento=False):
         desativar_chip_select(slot)
         
 #----------------------------------------------------------------------------------------------
-def send_json(slot, msg, addr= False):
+def send_i2c(slot, msg, addr= False):
     update_i2c_addr()
     ativar_chip_select(slot)
     addr = CS_ADDRSS[slot] if addr is False else addr
@@ -117,7 +117,7 @@ def send_json(slot, msg, addr= False):
         time.sleep(0.01)
     desativar_chip_select(slot)
 
-def read_json(slot, addr = False):
+def read_i2c(slot, addr = False):
     update_i2c_addr()
     ativar_chip_select(slot)
     json_bytes = bytearray()
@@ -149,6 +149,13 @@ def read_json(slot, addr = False):
     except Exception as e:
         print("Erro ao decodificar JSON:", e)
         return None
+    
+    
+def send_time_read(slot,msg,tempo):
+    send_i2c(slot,msg)
+    time.sleep(tempo)
+    resposta = read_i2c(slot)
+    return resposta
         
 # Registro automatico ao sair
 @atexit.register

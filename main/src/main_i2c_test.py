@@ -11,6 +11,7 @@ if __name__ == '__main__':
         print("4. Escanear slot")
         print("5. Rodar Rotina")
         print("6. CHECK")
+        print("7. Send - Time - Read")
         
         op = (int(input("| Digite a opcao: ")))
         if(op == 1):
@@ -21,14 +22,14 @@ if __name__ == '__main__':
                 data = {
                     "id": "5",                 # ID da requisicao
                     "test":"Tensao 3.3V",      # Irrelevante ao firmware
-                    "slot":slot,          # Chip Select SPI
-                    "port_output":[1,1],  # Porta a ser usada
+                    "slot":slot,               # Chip Select SPI
+                    "port_output":[1,1],       # Porta a ser usada
                     "debug": True}
                 write = list(data.values())[3:]
                 print(f"Enviando ao SLOT {slot}...")
-                master_mind.send_json(slot, write)
+                master_mind.send_i2c(slot, write)
                 print(f"Lendo resposta SLOT {slot}...")
-                response = master_mind.read_json(slot)
+                response = master_mind.read_i2c(slot)
                 print(f"Resposta SLOT {slot}:", response)
                 
             except Exception as e:
@@ -41,9 +42,9 @@ if __name__ == '__main__':
             write = "check" #str(input("|CMD: "))
             try:
                 print(f"Enviando ao SLOT {slot}...")
-                master_mind.send_json(slot, write)
+                master_mind.send_i2c(slot, write)
                 print(f"Lendo resposta SLOT {slot}...")
-                response = master_mind.read_json(slot)
+                response = master_mind.read_i2c(slot)
                 print(f"Resposta SLOT {slot}:", response)
             except Exception as e:
                 print(f"Modulo SLOT {slot} nao encontrado.")
@@ -56,4 +57,9 @@ if __name__ == '__main__':
         if(op == 6):
             slot = 2
             print(master_mind.send_check(slot))
+        if(op == 7):
+            slot = int(input("| SLOT: "))
+            msg  = str(input("| Mensagem: "))
+            time = int(input("| TIME: "))
+            master_mind.send_time_read(slot,msg,time)
         print()
