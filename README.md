@@ -1,10 +1,7 @@
 # fct_i2c_logic
 Manual de uso das funções
 ### master_mind.py - código nível **FIRMWARE**
-
-Principais Funções
-
-#### **Escanear endereços I2C**
+### **Escanear endereços I2C**
 ### `scan_i2c(slot=False)`
 
 **Objetivo:**
@@ -17,7 +14,7 @@ Principais Funções
 |Nome|Tipo|Padrão|Descrição|
 |---|---|---|---|
 |slot|bool/int|`False`|Se `False`, apenas lista dispositivos; se número, define endereço para a placa correspondente.|
-#### **Enviar mensagens via I2C:**
+### **Enviar mensagens via I2C:**
 ### `send_json(slot, msg, addr=False)`
 
 **Objetivo:**
@@ -31,7 +28,7 @@ Principais Funções
 | msg  | dict/list/str | —       | Dicionário/Lista/String Python que será convertido em JSON e enviado via I²C.             |
 | addr | int/bool      | `False` | Endereço I²C do dispositivo; se `False`, usa o endereço configurado em `CS_ADDRSS[slot]`. |
 
-#### **Receber mensagem I2C**
+### **Receber mensagem I2C**
 ### `read_json(slot, addr=False)`
 
 **Objetivo:**
@@ -50,7 +47,7 @@ Principais Funções
 - `str` — Conteúdo do JSON recebido.
 - `None` — Se ocorrer erro na decodificação ou nenhum dado for recebido.
 
-#### **Enviar - Esperar - Receber**
+### **Enviar - Esperar - Receber**
 ### `send_time_read(slot,msg,time)`
 
 * Envia uma **mensagem** para o **slot** escolhido e recebe e resposta depois de um determinado **tempo**.
@@ -63,8 +60,8 @@ Principais Funções
 | time | int          | tempo em segundos entre escrita e leitura |
 
 ### json_edit.py código nível **BACKEND**
-##### `ler_lista_enderecos()`
+### `ler_lista_enderecos()`
 * Retorna em uma lista os endereços i2c salvos em `defaul_addrss.json`
 
-##### `contar_keys(caminho_json, separador)`
+### `contar_keys(caminho_json, separador)`
 * Conta o número de chaves iguais em um arquivo .json, pode ser útil para saber quantos testes estão guardados em um arquivo de `routine.json`.
