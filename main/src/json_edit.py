@@ -167,7 +167,6 @@ def obter_rotina_por_chave(caminho_arquivo, chave):
 def contar_keys(caminho_json, separador):
     with open(caminho_json, 'r', encoding='utf-8') as f:
         dados = json.load(f)  # <-- aqui usamos json.load() (sem 's')
-
     return sum(1 for item in dados if separador in item)
 
 #atualizar_slot_json(arquivo_json_slots,1)
@@ -193,8 +192,8 @@ def contar_keys(caminho_json, separador):
 #         "debug": False
 #     })
 
-#gerenciar_rotina(arquivo_json_rotina, {"id": 2}, deletar=True)
-#atualizar_endereco_slot(arquivo_json_i2c_addrss, slot=2, novo_endereco=0x61)
+#gerenciar_rotina({"id": 2}, deletar=True)
+#atualizar_endereco_slot(slot=2, novo_endereco=0x61)
 
 # atualizar_slot_json(arquivo_json, 1, 
 #     novos_dados=
@@ -207,7 +206,7 @@ def contar_keys(caminho_json, separador):
 #     "temperature": 38.7
 #     })
 
-# atualizar_slot_json(arquivo_json,4,
+# atualizar_slot_json(4,
 #     novos_dados=
 #     {
 #     "present": False,
@@ -217,5 +216,3 @@ def contar_keys(caminho_json, separador):
 #     "ports":None, 
 #     "temperature": None
 #     })  
-#write_json(arquivo_json,2,True,"Volts Card 2.1",2.3,32,45.3)
-# read_json_slots(arquivo_json_slots,1)
