@@ -63,5 +63,5 @@ Manual de uso das funções
 ### `ler_lista_enderecos()`
 * Retorna em uma lista os endereços i2c salvos em `defaul_addrss.json`
 
-### `contar_keys(caminho_json, separador)`
-* Conta o número de chaves iguais em um arquivo .json, pode ser útil para saber quantos testes estão guardados em um arquivo de `routine.json`.
+### `atualizar_json_slot(slot,novos_dados)`
+* Atualiza o ***slots.json*** com os dados extraídos por scan_i2c().
