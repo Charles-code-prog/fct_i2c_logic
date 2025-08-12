@@ -15,7 +15,7 @@ if __name__ == '__main__':
         
         op = (int(input("| Digite a opcao: ")))
         if(op == 1):
-            slot = 2# int(input("|Slot: "))
+            slot = int(input("|Slot: "))
             #port = int(input("|Port: "))
             #write =int(input("|Action: "))
             try:

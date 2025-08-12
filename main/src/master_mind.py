@@ -16,16 +16,12 @@ for slot, CS in enumerate(CHIP_SELECTS):
         lgpio.gpio_claim_output(HANDLE, CHIP_SELECTS[slot])
         lgpio.gpio_write(HANDLE, CHIP_SELECTS[slot], 1)
         
-        
-
 def ativar_chip_select(slot):
     lgpio.gpio_write(HANDLE, CHIP_SELECTS[slot], 0)
-
 
 def desativar_chip_select():
     for pin in CHIP_SELECTS:
         lgpio.gpio_write(HANDLE, pin, 1)
-
 
 I2C_BUS = 1
 bus = SMBus(I2C_BUS)

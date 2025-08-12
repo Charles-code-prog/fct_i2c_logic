@@ -25,14 +25,7 @@ void setup() {
   Wire.onRequest(sendEvent);
   Serial.begin(9600);
 
-  // JsonDocument doc;
-  // doc["id"] = 123;
-  // doc["sensor"] = "temperature";
-  // doc["value"] = 25.7;
-  // doc["status"] = "OK";
-  // serializeJson(doc, jsonToSend);
-  digitalWrite(led, LOW);
-  
+  digitalWrite(led, LOW);  
   mostrarMenu();
 }
 
