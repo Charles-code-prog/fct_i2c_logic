@@ -65,3 +65,9 @@ Manual de uso das funções
 
 ### `atualizar_json_slot(slot,novos_dados)`
 * Atualiza o ***slots.json*** com os dados extraídos por scan_i2c().
+
+### `error_logger(slot, msg)`
+* Insere uma mensagem de erro em um JSON
+* Estrutura dos dados: 
+	`addr_i2c, id_test, test_name, op, error = msg`
+ 
