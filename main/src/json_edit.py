@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 
 # Caminho do arquivo
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -13,6 +14,7 @@ arquivo_json_slots       = caminho_json("data/slots.json")
 arquivo_json_i2c_addrss  = caminho_json("data/default_addrss.json")
 arquivo_json_rotina      = caminho_json("data/routine.json")
 arquivo_json_results     = caminho_json("data/results.json")
+arquivo_json_error       = caminho_json("data/error_register.json")
 
 ### SLOT
 def read_json_slots(slot_especifico=None):
@@ -168,6 +170,46 @@ def contar_keys(caminho_json, separador):
     with open(caminho_json, 'r', encoding='utf-8') as f:
         dados = json.load(f)  # <-- aqui usamos json.load() (sem 's')
     return sum(1 for item in dados if separador in item)
+
+
+### ERROR
+def error_logger(slot, msg):
+    file_path = arquivo_json_error
+    # Descompacta a lista
+    addr_i2c, id_test, test_name, op, error = msg
+
+    # Monta o registro no formato desejado
+    registro = {
+        "slot": slot,
+        "addr_i2c": addr_i2c,
+        "datetime": datetime.now().strftime("%H:%M:%S %d/%m/%y"),
+        "id": id_test,
+        "test": test_name,
+        "op": op,
+        "error": error
+    }
+
+    # Se o arquivo nao existir, cria uma lista nova
+    if not os.path.exists(file_path):
+        dados = []
+    else:
+        with open(file_path, "r", encoding="utf-8") as f:
+            try:
+                dados = json.load(f)
+            except json.JSONDecodeError:
+                dados = []
+
+    # Adiciona novo registro
+    dados.append(registro)
+    
+    # Salva de volta
+    with open(file_path, "w", encoding="utf-8") as f:
+        json.dump(dados, f, ensure_ascii=False, indent=4)
+
+# error_logger(
+#     slot=1,
+#     msg= [81, 5, "Tensão 3.3V", "read", "no response"]
+# )
 
 #atualizar_slot_json(arquivo_json_slots,1)
 #print("Lista de enderecos: ",ler_lista_enderecos())

@@ -16,12 +16,16 @@ for slot, CS in enumerate(CHIP_SELECTS):
         lgpio.gpio_claim_output(HANDLE, CHIP_SELECTS[slot])
         lgpio.gpio_write(HANDLE, CHIP_SELECTS[slot], 1)
         
+        
+
 def ativar_chip_select(slot):
     lgpio.gpio_write(HANDLE, CHIP_SELECTS[slot], 0)
+
 
 def desativar_chip_select():
     for pin in CHIP_SELECTS:
         lgpio.gpio_write(HANDLE, pin, 1)
+
 
 I2C_BUS = 1
 bus = SMBus(I2C_BUS)
@@ -56,8 +60,8 @@ def redefinir_endereco(slot, endereco_antigo):
 
 def send_check(slot, addr = False):
     addr = CS_ADDRSS[slot] if addr is False else int(addr,16)
-    send_i2c(slot,"check",addr)
-    response = read_i2c(slot,addr).split(";")
+    send_i2c(slot,"check",addr=addr)
+    response = read_i2c(slot,addr=addr).split(";")
     return response
     
 def update_slot_json(slot,response=False):
@@ -90,7 +94,7 @@ def scan_i2c(barramento=False):
         ativar_chip_select(slot)
         addr = busca_addr_i2c(slot)
         if addr:
-            response = send_check(slot,addr)
+            response = send_check(slot,addr=addr)
             print(response)
             update_slot_json(slot,response)
             redefinir_endereco(slot,addr)
@@ -98,7 +102,7 @@ def scan_i2c(barramento=False):
             update_slot_json(slot)
         desativar_chip_select()
 
-def send_i2c(slot, msg, addr= False):
+def send_i2c(slot, msg, dic = False, addr= False):
     update_i2c_addr()
     addr = CS_ADDRSS[slot] if addr is False else addr
     json_str = json.dumps(msg)
@@ -114,11 +118,17 @@ def send_i2c(slot, msg, addr= False):
             index += CHUNK_SIZE
             time.sleep(0.01)
     except Exception as e:
-        print(f"erro de comunicaÃ§ao com slot {slot}")
+        print(f"Erro de comunicaÃ§ao com slot {slot}")
+        
+        ##funcao de relatorio de erro
+        id, test = (dic.get('id'), dic.get('test')) if isinstance(dic, dict) else (None, None)
+        msg = [addr, id,test,"send",f"no sending in cs{slot}"]
+        print("erro json")
+        json_edit.error_logger(slot,msg)
     finally:    
         desativar_chip_select()
 
-def read_i2c(slot, addr = False):
+def read_i2c(slot,dic = False, addr = False):
     update_i2c_addr()
     json_bytes = bytearray()
     addr = CS_ADDRSS[slot] if addr is False else addr
@@ -146,19 +156,29 @@ def read_i2c(slot, addr = False):
             time.sleep(0.01) 
     except Exception as e:
         print(f"erro de resposta com slot {slot}")
+        
+        ##funcao de relatorio de erro
+        id, test = (dic.get('id'), dic.get('test')) if isinstance(dic, dict) else (None, None)
+        msg = [addr, id,test,"read",f"no response in cs{slot}"]
+        json_edit.error_logger(slot,msg)
     finally:
         desativar_chip_select()
+        
     try:
         json_str = json_bytes.decode('utf-8')
         return json_str
     except Exception as e:
         print("Erro ao decodificar JSON:", e)
+        
+        ##funcao de relatorio de erro
+        id, test = (dic.get('id'), dic.get('test')) if isinstance(dic, dict) else (None, None)
+        msg = [addr, id, test,"decode",f"no decode in cs{slot}"]
         return None
         
-def send_time_read(slot,msg,tempo):
-    send_i2c(slot,msg)
+def send_time_read(slot,msg,tempo,dic=False):
+    send_i2c(slot,msg,dic=dic)
     time.sleep(tempo)
-    resposta = read_i2c(slot)
+    resposta = read_i2c(slot,dic=dic)
     return resposta
 #----------------------------------------------------------------------------------------------
 #scan_i2c()
