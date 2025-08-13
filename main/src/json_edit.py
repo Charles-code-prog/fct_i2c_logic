@@ -177,10 +177,11 @@ def error_logger(slot, msg):
     file_path = arquivo_json_error
     # Descompacta a lista
     addr_i2c, id_test, test_name, op, error = msg
-
+    id_error = contar_keys(file_path,"id")
+    
     # Monta o registro no formato desejado
     registro = {
-        "slot": slot,
+        "id_error": id_error+1,
         "addr_i2c": addr_i2c,
         "datetime": datetime.now().strftime("%H:%M:%S %d/%m/%y"),
         "id": id_test,
