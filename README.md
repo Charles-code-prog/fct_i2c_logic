@@ -1,5 +1,7 @@
 # fct_i2c_logic
 Manual de uso das funções
+
+## 1. Master
 ### master_mind.py - código nível **FIRMWARE**
 ### **Escanear endereços I2C**
 ### `scan_i2c(slot=False)`
@@ -71,3 +73,15 @@ Manual de uso das funções
 * Estrutura dos dados: 
 	`addr_i2c, id_test, test_name, op, error = msg`
  
+
+## 2.2 Slave
+### **Estrutura padrão do firmware**
+* Arquivo principal **.ino**.
+* Biblioteca padrão de comunicação: **Bridge.h** .
+* Cabeçalho com informações do card: **info.h**.
+
+*Funcionalidades padrão já suportadas*:
+
+* Comando **reset** recebido do Master.
+* Comando **check** para envio das informações do card.
+* Comando **addrss;num** para alteração de endereço I²C, seguido de reset.
